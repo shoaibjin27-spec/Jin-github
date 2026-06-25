@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  n8n-agent:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - N8N_API_URL=http://n8n:5678
+      - N8N_API_KEY=${N8N_API_KEY}
+      - AGENT_PORT=3000
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+    depends_on:
+      - n8n
+    networks:
+      - n8n-network
+
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - n8n-network
+
+volumes:
+  n8n_data:
+
+networks:
+  n8n-network:
+    driver: bridge
